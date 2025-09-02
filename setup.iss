@@ -31,8 +31,8 @@ Name: "chinesesimp"; MessagesFile: "compiler:Default.isl"
 [Files]
 ; 主程序
 Source: "dist\nuoqin.exe"; DestDir: "{app}"; Flags: ignoreversion
-; tools 文件夹（递归）
-Source: "dist\tools\*"; DestDir: "{app}\tools"; Flags: ignoreversion recursesubdirs createallsubdirs
+; config 文件夹（递归）
+Source: "dist\config\*"; DestDir: "{app}\config"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; 如果有图标，也可以打包
 Source: "dist\tools.ico"; DestDir: "{app}"; Flags: ignoreversion
 

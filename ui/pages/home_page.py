@@ -254,10 +254,10 @@ class HomePage(BasePage):
         
         # 作者名称
         name_layout = QHBoxLayout()
-        name_icon = QLabel("👤 作者")
-        name_icon.setFont(QFont("Microsoft YaHei", 14))
+        name_icon = QLabel("👤 作者：")
+        name_icon.setFont(QFont("Microsoft YaHei", 12))
         name_icon.setStyleSheet("border: none;")
-        name_label = QLabel("：nuoqin")
+        name_label = QLabel("nuoqin")
         name_label.setFont(QFont("Microsoft YaHei", 12, QFont.Bold))
         name_label.setStyleSheet("color: #2c3e50; border: none;")
         name_layout.addWidget(name_icon)
@@ -267,7 +267,7 @@ class HomePage(BasePage):
         # GitHub地址
         github_layout = QHBoxLayout()
         github_icon = QLabel("🔗 GitHub：")
-        github_icon.setFont(QFont("Microsoft YaHei", 14))
+        github_icon.setFont(QFont("Microsoft YaHei", 12))
         github_icon.setStyleSheet("border: none;")
         github_label = QLabel("https://github.com/nuoqin")
         github_label.setFont(QFont("Microsoft YaHei", 12))
@@ -322,4 +322,4 @@ class HomePage(BasePage):
     
     def open_github(self):
         """打开GitHub链接"""
-        QDesktopServices.openUrl(QUrl("https://github.com"))
+        QDesktopServices.openUrl(QUrl("https://github.com/nuoqin/pd-bm"))

@@ -38,7 +38,7 @@ python main.py
 
 #### Windows用户
 ```bash
-pyinstaller -F -w -i tools.ico main.py --add-data "ui;ui" --add-data "utils;utils" --add-data "model;model"
+pyinstaller -F -w -i tools.ico --name="nuoqin" main.py --add-data "ui;ui" --add-data "utils;utils" --add-data "model;model"
 ```
 
 ## 🛠️ 技术栈
