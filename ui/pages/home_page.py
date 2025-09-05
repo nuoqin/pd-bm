@@ -104,7 +104,7 @@ class HomePage(BasePage):
             }
         """)
         layout = QVBoxLayout(card)
-        layout.setSpacing(6)
+        layout.setSpacing(3)
         # 标题
         title_label = QLabel("📖 项目介绍")
         title_label.setFont(QFont("Microsoft YaHei", 18, QFont.Bold))
@@ -121,7 +121,7 @@ class HomePage(BasePage):
         """
         intro_label = QLabel(intro_text.strip())
         intro_label.setFont(QFont("Microsoft YaHei", 11))
-        intro_label.setStyleSheet("color: #34495e; border: none; line-height: 1.6;")
+        intro_label.setStyleSheet("color: #34495e; border: none; line-height: 1.8;")
         intro_label.setWordWrap(True)
         intro_label.setAlignment(Qt.AlignLeft)
         

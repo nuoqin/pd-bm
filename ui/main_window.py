@@ -25,7 +25,7 @@ class NavBar(QWidget):
         self.config = load_menu_config()
         self.setWindowTitle("nuoqin管理器")
         self.resize(860, 500)
-        self.setMinimumSize(860,500)
+        self.setMinimumSize(880,520)
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(12, 12, 12, 12)  # 添加统一边距
         main_layout.setSpacing(12)  # 设置左右区域间距
@@ -164,7 +164,7 @@ class NavBar(QWidget):
         elif page_name.endswith("书签分类"):
             return BookmarkCategoryManagerPage(encryption_key=self.encryption_key)
         elif page_name == "设置":
-            settings_page = SettingsPage()
+            settings_page = SettingsPage(key=self.encryption_key)
             # 连接主题切换信号
             if self.theme_manager:
                 settings_page.theme_changed.connect(self.on_theme_changed)

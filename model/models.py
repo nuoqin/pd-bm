@@ -197,7 +197,7 @@ class PasswordManager:
     def add_password(self, title: str, source: str, description: str, account: str, password: str) -> PasswordItem:
         """添加新密码"""
         item = PasswordItem(title, description, account, password, source)
-        self.passwords.append(item)
+        self.passwords.insert(0,item)
         self.save_data()
         return item
     
@@ -331,7 +331,7 @@ class BookmarkManager:
     def add_bookmark(self, title: str, url: str, description: str, category: str = "默认分类") -> BookmarkItem:
         """添加新书签"""
         item = BookmarkItem(title, description, url, category)
-        self.bookmarks.append(item)
+        self.bookmarks.insert(0,item)
         self.save_data()
         return item
 
@@ -547,7 +547,7 @@ class BookmarkCategoryManager:
                 raise ValueError(f"分类 '{name}' 已存在")
         
         item = BookmarkCategory(name, description, color)
-        self.categories.append(item)
+        self.categories.insert(0,item)
         self.save_data()
         return item
 

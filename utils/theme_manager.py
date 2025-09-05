@@ -282,5 +282,4 @@ class ThemeManager:
                 background-color: {colors['border_color']};
             }}
             """
-        
         return ""

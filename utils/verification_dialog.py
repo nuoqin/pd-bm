@@ -6,9 +6,12 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt
-import hashlib
 
-from utils.style_button_btn import StyleButtonManager
+from utils.crypto_utils import CryptoAesUtils
+from utils.style import StyleButtonManager
+
+
+
 
 
 class VerificationDialog(QDialog):
@@ -105,16 +108,9 @@ class VerificationDialog(QDialog):
         if len(password) < 4:
             QMessageBox.warning(self, "密码太短", "访问码至少需要4个字符！")
             return
-
         # 使用用户输入的密码直接作为加密密钥的基础
-        self.encryption_key = self.generate_key_from_password(password)
+        self.encryption_key = CryptoAesUtils.generate_key_from_password(password)
         self.accept()
-
-    def generate_key_from_password(self, password: str) -> str:
-        """根据用户输入的密码生成AES密钥"""
-        # 使用SHA256生成32字节密钥
-        key_hash = hashlib.sha256(password.encode('utf-8')).digest()
-        return key_hash.hex()
 
     def get_encryption_key(self) -> str:
         """获取加密密钥"""

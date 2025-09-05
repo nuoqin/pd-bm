@@ -34,8 +34,8 @@ def load_menu_config():
                 }
             ],
             "config": {
-                "nav_width": 160,
-                "button_height": 45,
+                "nav_width": 140,
+                "button_height": 40,
                 "font_family": "Microsoft YaHei",
                 "font_size": 10
             }

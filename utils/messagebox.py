@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QMessageBox
 
-from utils.style_button_btn import StyleButtonManager
+from utils.style import StyleButtonManager
 
 
 class NMessageBox:

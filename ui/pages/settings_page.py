@@ -1,13 +1,16 @@
 """设置页面模块"""
 
 from PyQt5.QtWidgets import (
-    QFrame, QVBoxLayout, QLabel, QHBoxLayout, 
-    QComboBox, QPushButton, QMessageBox
+    QFrame, QVBoxLayout, QLabel, QHBoxLayout,
+    QComboBox, QPushButton, QMessageBox, QLineEdit, QGridLayout
 )
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import pyqtSignal
 
+from utils import ThemeManager
 from utils.messagebox import NMessageBox
+from utils.pwd_utils import PasswordOperate
+from utils.style import StyleButtonManager, StyleQComboBoxManager, StyleQLineEditManager
 from .base_page import BasePage
 import json
 import os
@@ -19,70 +22,23 @@ class SettingsPage(BasePage):
     # 定义信号
     theme_changed = pyqtSignal(str)  # 主题改变信号
     
-    def __init__(self):
+    def __init__(self, key):
         # 先初始化主题数据，再调用父类初始化
-        self.themes = {
-            "默认主题": {
-                "background": "#f5f7fa",
-                "card_background": "#ffffff",
-                "text_color": "#333333",
-                "border_color": "#dddddd",
-                "accent_color": "#007acc"
-            },
-            "深色主题": {
-                "background": "#2b2b2b",
-                "card_background": "#3c3c3c",
-                "text_color": "#ffffff",
-                "border_color": "#555555",
-                "accent_color": "#4a9eff"
-            },
-            "护眼主题": {
-                "background": "#f0f8e8",
-                "card_background": "#ffffff",
-                "text_color": "#2d5016",
-                "border_color": "#c8e6c9",
-                "accent_color": "#4caf50"
-            },
-            "温暖主题": {
-                "background": "#fff8e1",
-                "card_background": "#ffffff",
-                "text_color": "#5d4037",
-                "border_color": "#ffcc02",
-                "accent_color": "#ff9800"
-            },
-            "清新主题": {
-                "background": "#e3f2fd",
-                "card_background": "#ffffff",
-                "text_color": "#0d47a1",
-                "border_color": "#90caf9",
-                "accent_color": "#2196f3"
-            }
-        }
+        self.themes = ThemeManager().themes
         self.current_theme = "默认主题"
         self.load_theme_settings()
-        
+        self.encryption_key=key
         # 调用父类初始化（这会调用init_ui）
         super().__init__("设置")
     
     def init_ui(self):
         """初始化设置界面"""
-
         # 主题设置卡片
         theme_card = self.create_theme_settings_card()
         self.add_card(theme_card)
-
-        # 其他设置选项卡片
-        other_settings_card = QFrame()
-        other_settings_card.setStyleSheet("""
-            QFrame {
-                background-color: #ffffff;
-                border-radius: 12px;
-                border: 1px solid #dddddd;
-                margin: 0px;
-                padding: 20px;
-            }
-        """)
-        self.add_card(other_settings_card)
+        # 修改密码
+        passwd_card = self.create_passwd_settings_card()
+        self.add_card(passwd_card)
         self.add_stretch()
     
     def create_theme_settings_card(self):
@@ -91,98 +47,128 @@ class SettingsPage(BasePage):
         theme_card.setStyleSheet("""
             QFrame {
                 background-color: #ffffff;
-                border-radius: 12px;
-                border: 1px solid #dddddd;
                 margin: 0px;
-                padding: 20px;
+                padding: 5px;
             }
         """)
         theme_layout = QVBoxLayout(theme_card)
-        
         # 主题设置标题
         theme_title = QLabel("🎨 界面主题")
         theme_title.setFont(QFont("Microsoft YaHei", 14, QFont.Bold))
-        theme_title.setStyleSheet("padding: 8px 0px; color: #333333; border: none;")
+        theme_title.setStyleSheet("padding: 4px 0px; color: #333333; border: none;")
         theme_layout.addWidget(theme_title)
-        
-        # 主题选择区域
-        theme_selection_layout = QHBoxLayout()
-        
+
+        # 主题选择区域内容卡片
+        theme_content_layout = QVBoxLayout()
+
         # 主题选择标签
+        theme_selection_layout = QGridLayout()
         theme_label = QLabel("选择主题:")
-        theme_label.setFont(QFont("Microsoft YaHei", 12))
+        theme_label.setFont(QFont("Microsoft YaHei", 10))
         theme_label.setStyleSheet("color: #666666;  border: none;")
-        theme_selection_layout.addWidget(theme_label)
+        theme_label.setFixedWidth(100)
+        theme_selection_layout.addWidget(theme_label,0,0)
         
         # 主题下拉菜单
         self.theme_combo = QComboBox()
         self.theme_combo.addItems(list(self.themes.keys()))
         self.theme_combo.setCurrentText(self.current_theme)
-        self.theme_combo.setFont(QFont("Microsoft YaHei", 11))
-        self.theme_combo.setStyleSheet("""
-            QComboBox {
-                border: 1px solid #dee2e6;
-                border-radius: 4px;
-                padding: 6px 12px;
-                background-color: #ffffff;
-                color: #333333;
-                min-width: 150px;
-            }
-            QComboBox:hover {
-                border-color: #007acc;
-            }
-            QComboBox::drop-down {
-                border: none;
-                width: 20px;
-            }
-            QComboBox::down-arrow {
-                image: none;
-                border-left: 5px solid transparent;
-                border-right: 5px solid transparent;
-                border-top: 5px solid #666666;
-                margin-right: 5px;
-            }
-            QComboBox QAbstractItemView {
-                border: 1px solid #dee2e6;
-                background-color: #ffffff;
-                selection-background-color: #007acc;
-                selection-color: white;
-            }
-        """)
+        StyleQComboBoxManager.set_style_comboBox_default(self.theme_combo)
         self.theme_combo.currentTextChanged.connect(self.on_theme_changed)
-        theme_selection_layout.addWidget(self.theme_combo)
-        
+        theme_selection_layout.addWidget(self.theme_combo,0,1)
         # 应用按钮
         apply_btn = QPushButton("应用主题")
-        apply_btn.setFont(QFont("Microsoft YaHei", 11))
-        apply_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #007acc;
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                min-width: 80px;
-            }
-            QPushButton:hover {
-                background-color: #005a9e;
-            }
-            QPushButton:pressed {
-                background-color: #004080;
-            }
-        """)
+        apply_btn.setFont(QFont("Microsoft YaHei", 10))
+        StyleButtonManager.set_style_btn_sheet_default(apply_btn)
         apply_btn.clicked.connect(self.apply_theme)
-        theme_selection_layout.addWidget(apply_btn)
-        
-        theme_selection_layout.addStretch()
-        theme_layout.addLayout(theme_selection_layout)
+        apply_btn.setFixedWidth(100)
+        theme_selection_layout.addWidget(apply_btn,0,2)
+        theme_content_layout.addLayout(theme_selection_layout)
         # 预览卡片
+        preview_layout = QGridLayout()
+        bg_label = QLabel("背景颜色:")
+        bg_label.setFont(QFont("Microsoft YaHei", 10))
+        bg_label.setStyleSheet("color: #666666;  border: none;")
+        bg_label.setFixedWidth(100)
         self.preview_card = QFrame()
         self.update_preview_card()
-        theme_layout.addWidget(self.preview_card)
+        preview_layout.addWidget(bg_label, 0, 0)
+        preview_layout.addWidget(self.preview_card,0,1)
 
+
+        theme_content_layout.addLayout(preview_layout)
+        #合成
+        theme_layout.addLayout(theme_content_layout)
         return theme_card
-    
+
+    def create_passwd_settings_card(self):
+        """创建密码设置卡片"""
+        passwd_card = QFrame()
+        passwd_card.setStyleSheet("""
+            QFrame {
+                background-color: #ffffff;
+                margin: 0px;
+                padding: 5px;
+            }
+        """)
+        passwd_layout = QVBoxLayout(passwd_card)
+        passwd_layout.setSpacing(10)
+        # 密码设置标题
+        passwd_title = QLabel("🔒 密码设置")
+        passwd_title.setFont(QFont("Microsoft YaHei", 14, QFont.Bold))
+        passwd_title.setStyleSheet("padding: 10px 0px; color: #333333; border: none;")
+        passwd_layout.addWidget(passwd_title)
+
+        passwd_input_layout=QGridLayout()
+
+        passwd_input_layout.setVerticalSpacing(10)
+        # 密码设置内容
+        passwd_content = QLabel("初始密码")
+        passwd_content.setFont(QFont("Microsoft YaHei", 10))
+        passwd_content.setStyleSheet("color: #666666; border: none; ")
+        # 密码设置输入框
+        self.passwd_input = QLineEdit()
+        self.passwd_input.setPlaceholderText("请输入旧的访问码...")
+        StyleQLineEditManager.set_style_edit_default(self.passwd_input)
+        self.passwd_input.setEchoMode(QLineEdit.Password)
+        passwd_input_layout.addWidget(passwd_content, 0, 0)
+        passwd_input_layout.addWidget(self.passwd_input, 0,1)
+
+        # 新密码设置内容
+        new_passwd_content = QLabel("新密码：")
+        new_passwd_content.setFont(QFont("Microsoft YaHei", 10))
+        new_passwd_content.setStyleSheet("color: #666666; border: none; ")
+        # 密码设置输入框
+        self.new_passwd_input = QLineEdit()
+        StyleQLineEditManager.set_style_edit_default(self.new_passwd_input)
+        self.new_passwd_input.setPlaceholderText("请输入新的访问码...")
+        self.new_passwd_input.setEchoMode(QLineEdit.Password)
+        passwd_input_layout.addWidget(new_passwd_content, 1, 0)
+        passwd_input_layout.addWidget(self.new_passwd_input, 1,1)
+
+        # 新密码设置内容
+        reset_passwd_content = QLabel("确认密码：")
+        reset_passwd_content.setFont(QFont("Microsoft YaHei", 10))
+        reset_passwd_content.setStyleSheet("color: #666666; border: none; ")
+
+        # 密码设置输入框
+        self.reset_passwd_input = QLineEdit()
+        self.reset_passwd_input.setPlaceholderText("请再次输入访问码...")
+        StyleQLineEditManager.set_style_edit_default(self.reset_passwd_input)
+        self.reset_passwd_input.setEchoMode(QLineEdit.Password)
+        passwd_input_layout.addWidget(reset_passwd_content, 2, 0)
+        passwd_input_layout.addWidget(self.reset_passwd_input, 2,1)
+        passwd_layout.addLayout(passwd_input_layout)
+
+        passwd_layout.addSpacing(10)
+        # 密码设置确认按钮
+        passwd_confirm_btn = QPushButton("确认设置")
+        passwd_confirm_btn.setFont(QFont("Microsoft YaHei", 10))
+        StyleButtonManager.set_style_btn_sheet_default(passwd_confirm_btn)
+        passwd_confirm_btn.clicked.connect(self.change_passwd_key)
+        passwd_layout.addWidget(passwd_confirm_btn)
+        return passwd_card
+
     def update_preview_card(self):
         """更新预览卡片"""
         selected_theme = self.theme_combo.currentText() if hasattr(self, 'theme_combo') else self.current_theme
@@ -190,7 +176,7 @@ class SettingsPage(BasePage):
         
         self.preview_card.setStyleSheet(f"""
             QFrame {{
-                background-color: {theme_colors['card_background']};
+                background-color: {theme_colors['background']};
                 border: 1px solid {theme_colors['border_color']};
                 border-radius: 2px;
                 padding: 15px;
@@ -277,3 +263,12 @@ class SettingsPage(BasePage):
     def get_current_theme_colors(self):
         """获取当前主题的颜色配置"""
         return self.themes.get(self.current_theme, self.themes["默认主题"])
+
+
+    def change_passwd_key(self):
+        pwd_operate=PasswordOperate(self.encryption_key)
+        pwd_operate.changePwd(
+            self.passwd_input.text(),
+            self.new_passwd_input.text(),
+            self.reset_passwd_input.text()
+        )

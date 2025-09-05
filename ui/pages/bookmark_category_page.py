@@ -11,7 +11,7 @@ from PyQt5.QtGui import QFont, QIcon, QColor
 from PyQt5.QtCore import Qt, QTimer
 
 from utils.messagebox import NMessageBox
-from utils.style_button_btn import StyleButtonManager
+from utils.style import StyleButtonManager
 from .base_page import BasePage
 from model import BookmarkCategoryManager, BookmarkCategory
 

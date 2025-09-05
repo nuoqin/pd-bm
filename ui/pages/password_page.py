@@ -10,6 +10,7 @@ from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt, QTimer, QRect, QSize
 
 from utils.messagebox import NMessageBox
+from utils.style import StyleQLineEditManager
 from .base_page import BasePage
 from model import PasswordManager, PasswordItem
 
@@ -551,21 +552,7 @@ class PasswordManagerPage(BasePage):
         self.search_edit = QLineEdit()
         self.search_edit.setClearButtonEnabled(True)
         self.search_edit.setPlaceholderText("搜索密码（标题、来源、账号、描述）...")
-        self.search_edit.setStyleSheet("""
-            QLineEdit {
-                padding: 5px 10px;
-                border: 1px solid #e0e0e0;
-                border-radius: 2px;
-                font-size: 14px;
-                height: 24px;
-                background-color: #ffffff;
-                color: #333333;
-            }
-            QLineEdit:focus {
-                border-color: #007acc;
-                outline: none;
-            }
-        """)
+        StyleQLineEditManager.set_style_search_default(self.search_edit)
         # 设置搜索框的固定高度
         self.search_edit.setFixedHeight(34)
         self.search_edit.textChanged.connect(self.search_passwords)
